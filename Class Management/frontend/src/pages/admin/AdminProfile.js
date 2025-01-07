@@ -1,105 +1,454 @@
-// import React, { useState } from 'react';
-// import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
-// import { useDispatch, useSelector } from 'react-redux';
+// import React, { useEffect, useState } from 'react';
+// import { useSelector, useDispatch } from 'react-redux';
+// import { Button, Collapse, TextField, Typography, Box, IconButton, Fade, Grid, Paper } from '@mui/material';
+// import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 // import { deleteUser, updateUser } from '../../redux/userRelated/userHandle';
-// import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom';
 // import { authLogout } from '../../redux/userRelated/userSlice';
-// import { Button, Collapse } from '@mui/material';
 
-import { useSelector } from 'react-redux';
+// const AdminProfile = () => {
+//     const [showEdit, setShowEdit] = useState(false);
+//     const [name, setName] = useState('');
+//     const [email, setEmail] = useState('');
+//     const [schoolName, setSchoolName] = useState('');
+//     const [password, setPassword] = useState('');
+//     const { currentUser } = useSelector((state) => state.user);
+//     const dispatch = useDispatch();
+//     const navigate = useNavigate();
 
-const AdminProfile = () => {
-    // const [showTab, setShowTab] = useState(false);
-    // const buttonText = showTab ? 'Cancel' : 'Edit profile';
+//     useEffect(() => {
+//         if (currentUser) {
+//             setName(currentUser.name);
+//             setEmail(currentUser.email);
+//             setSchoolName(currentUser.schoolName);
+//         }
+//     }, [currentUser]);
 
-    // const navigate = useNavigate()
-    // const dispatch = useDispatch();
-        const { currentUser } = useSelector((state) => state.user);
-    // const { currentUser, response, error } = useSelector((state) => state.user);
-    // const address = "Admin"
+//     const handleUpdate = (event) => {
+//         event.preventDefault();
+//         const updatedFields = password ? { name, email, password, schoolName } : { name, email, schoolName };
+//         dispatch(updateUser(updatedFields, currentUser._id));
+//         setShowEdit(false);
+//     };
 
-    // if (response) { console.log(response) }
-    // else if (error) { console.log(error) }
+//     const handleDelete = () => {
+//         dispatch(deleteUser(currentUser._id));
+//         dispatch(authLogout());
+//         navigate('/');
+//     };
 
-    // const [name, setName] = useState(currentUser.name);
-    // const [email, setEmail] = useState(currentUser.email);
-    // const [password, setPassword] = useState("");
-    // const [schoolName, setSchoolName] = useState(currentUser.schoolName);
+//     return (
+//         <Box sx={styles.container}>
+//             <Typography variant="h4" sx={styles.header}>Admin Profile</Typography>
+//             <Grid container spacing={3} justifyContent="center">
+//                 <Grid item xs={12} md={6}>
+//                     <Paper elevation={3} sx={styles.profileCard}>
+//                         <Box sx={styles.profileInfo}>
+//                             <Typography variant="h6">Name: <span>{currentUser.name}</span></Typography>
+//                             <Typography variant="h6">Email: <span>{currentUser.email}</span></Typography>
+//                             <Typography variant="h6">School: <span>{currentUser.schoolName}</span></Typography>
+//                         </Box>
 
-    // const fields = password === "" ? { name, email, schoolName } : { name, email, password, schoolName }
+//                         <Box sx={styles.buttonGroup}>
+//                             <Button variant="contained" color="error" onClick={handleDelete} sx={styles.deleteButton}>
+//                                 Delete Account
+//                             </Button>
+//                             <IconButton onClick={() => setShowEdit(!showEdit)} sx={styles.toggleButton}>
+//                                 {showEdit ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+//                             </IconButton>
+//                             <Button variant="outlined" onClick={() => setShowEdit(!showEdit)} sx={styles.editButton}>
+//                                 {showEdit ? 'Cancel Edit' : 'Edit Profile'}
+//                             </Button>
+//                         </Box>
 
-    // const submitHandler = (event) => {
-    //     event.preventDefault()
-    //     dispatch(updateUser(fields, currentUser._id, address))
-    // }
+//                         <Collapse in={showEdit} timeout="auto">
+//                             <Fade in={showEdit}>
+//                                 <form onSubmit={handleUpdate} style={styles.editForm}>
+//                                     <Typography variant="h5" sx={styles.formTitle}>Edit Profile</Typography>
+//                                     <TextField
+//                                         label="Name"
+//                                         variant="outlined"
+//                                         value={name}
+//                                         onChange={(e) => setName(e.target.value)}
+//                                         sx={styles.textField}
+//                                         required
+//                                         margin="normal"  // Added margin for spacing
+//                                     />
+//                                     <TextField
+//                                         label="School Name"
+//                                         variant="outlined"
+//                                         value={schoolName}
+//                                         onChange={(e) => setSchoolName(e.target.value)}
+//                                         sx={styles.textField}
+//                                         required
+//                                         margin="normal"  // Added margin for spacing
+//                                     />
+//                                     <TextField
+//                                         label="Email"
+//                                         type="email"
+//                                         variant="outlined"
+//                                         value={email}
+//                                         onChange={(e) => setEmail(e.target.value)}
+//                                         sx={styles.textField}
+//                                         required
+//                                         margin="normal"  // Added margin for spacing
+//                                     />
+//                                     <TextField
+//                                         label="Password"
+//                                         type="password"
+//                                         variant="outlined"
+//                                         value={password}
+//                                         onChange={(e) => setPassword(e.target.value)}
+//                                         sx={styles.textField}
+//                                         margin="normal"  // Added margin for spacing
+//                                     />
+//                                     <Button type="submit" variant="contained" sx={styles.submitButton}>Update</Button>
+//                                 </form>
+//                             </Fade>
+//                         </Collapse>
+//                     </Paper>
+//                 </Grid>
+//             </Grid>
+//         </Box>
+//     );
+// };
 
-    // const deleteHandler = () => {
-    //     try {
-    //         dispatch(deleteUser(currentUser._id, "Students"));
-    //         dispatch(deleteUser(currentUser._id, address));
-    //         dispatch(authLogout());
-    //         navigate('/');
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // }
-
-    return (
-        <div>
-            Name: {currentUser.name}
-            <br />
-            Email: {currentUser.email}
-            <br />
-            School: {currentUser.schoolName}
-            <br />
-            {/* <Button variant="contained" color="error" onClick={deleteHandler}>Delete</Button> */}
-            {/* <Button variant="contained" sx={styles.showButton}
-                onClick={() => setShowTab(!showTab)}>
-                {showTab ? <KeyboardArrowUp /> : <KeyboardArrowDown />}{buttonText}
-            </Button>
-            <Collapse in={showTab} timeout="auto" unmountOnExit>
-                <div className="register">
-                    <form className="registerForm" onSubmit={submitHandler}>
-                        <span className="registerTitle">Edit Details</span>
-                        <label>Name</label>
-                        <input className="registerInput" type="text" placeholder="Enter your name..."
-                            value={name}
-                            onChange={(event) => setName(event.target.value)}
-                            autoComplete="name" required />
-
-                        <label>School</label>
-                        <input className="registerInput" type="text" placeholder="Enter your school name..."
-                            value={schoolName}
-                            onChange={(event) => setSchoolName(event.target.value)}
-                            autoComplete="name" required />
-
-                        <label>Email</label>
-                        <input className="registerInput" type="email" placeholder="Enter your email..."
-                            value={email}
-                            onChange={(event) => setEmail(event.target.value)}
-                            autoComplete="email" required />
-
-                        <label>Password</label>
-                        <input className="registerInput" type="password" placeholder="Enter your password..."
-                            value={password}
-                            onChange={(event) => setPassword(event.target.value)}
-                            autoComplete="new-password" />
-
-                        <button className="registerButton" type="submit" >Update</button>
-                    </form>
-                </div>
-            </Collapse> */}
-        </div>
-    )
-}
-
-export default AdminProfile
+// export default AdminProfile;
 
 // const styles = {
-//     attendanceButton: {
-//         backgroundColor: "#270843",
-//         "&:hover": {
-//             backgroundColor: "#3f1068",
-//         }
-//     }
-// }
+//     container: {
+//         padding: '30px',
+//         backgroundColor: '#f0f4f8',
+//         borderRadius: '12px',
+//         boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+//     },
+//     header: {
+//         textAlign: 'center',
+//         color: '#3f51b5',
+//         marginBottom: '20px',
+//     },
+//     profileCard: {
+//         backgroundColor: '#ffffff',
+//         borderRadius: '10px',
+//         padding: '20px',
+//         boxShadow: '0 2px 15px rgba(0,0,0,0.2)',
+//         transition: 'transform 0.3s',
+//         '&:hover': {
+//             transform: 'scale(1.02)',
+//         },
+//     },
+//     profileInfo: {
+//         marginBottom: '20px',
+//         display: 'flex',
+//         flexDirection: 'column',
+//         gap: '10px',
+//         fontWeight: 'bold',
+//         color: '#333',
+//         '& span': {
+//             fontWeight: 'normal',
+//         },
+//     },
+//     buttonGroup: {
+//         marginTop: '20px',
+//         display: 'flex',
+//         alignItems: 'center',
+//         justifyContent: 'space-between',
+//     },
+//     deleteButton: {
+//         backgroundColor: '#f44336',
+//         '&:hover': {
+//             backgroundColor: '#d32f2f',
+//         },
+//     },
+//     toggleButton: {
+//         color: '#3f51b5',
+//     },
+//     editButton: {
+//         borderColor: '#3f51b5',
+//         color: '#3f51b5',
+//     },
+//     editForm: {
+//         marginTop: '20px',
+//         display: 'flex',
+//         flexDirection: 'column',
+//         gap: '15px',
+//     },
+//     formTitle: {
+//         marginBottom: '10px',
+//         color: '#3f51b5',
+//     },
+//     textField: {
+//         width: '100%',
+//     },
+//     submitButton: {
+//         backgroundColor: '#3f51b5',
+//         '&:hover': {
+//             backgroundColor: '#303f9f',
+//         },
+//     },
+// };
+
+
+
+
+
+
+
+
+
+// 
+
+
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Button, Collapse, TextField, Typography, Box, IconButton, Fade, Grid, Paper, InputAdornment, Snackbar, Alert } from '@mui/material';
+import { KeyboardArrowDown, KeyboardArrowUp, Visibility, VisibilityOff } from '@mui/icons-material';
+import { updateUser, deleteUser } from '../../redux/userRelated/userHandle';  // Ensure these are correct imports
+import { authLogout } from '../../redux/userRelated/userSlice';
+import { useNavigate } from 'react-router-dom';
+
+const AdminProfile = () => {
+    const [showEdit, setShowEdit] = useState(false);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [schoolName, setSchoolName] = useState('');
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+
+    const { currentUser } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (currentUser) {
+            setName(currentUser.name || '');
+            setEmail(currentUser.email || '');
+            setSchoolName(currentUser.schoolName || '');
+        }
+    }, [currentUser]);
+
+    // Debug: Log current user
+    useEffect(() => {
+        console.log('Current User:', currentUser);
+    }, [currentUser]);
+
+    const handleUpdate = async (event) => {
+        event.preventDefault();
+
+        if (!currentUser?._id) {
+            console.error('User ID is missing');
+            setSnackbar({ open: true, message: 'User ID is missing!', severity: 'error' });
+            return;
+        }
+
+        const updatedFields = { name, email, schoolName, ...(password && { password }) };
+
+        try {
+            await dispatch(updateUser({ ...updatedFields, id: currentUser._id })).unwrap();
+            setSnackbar({ open: true, message: 'Profile updated successfully!', severity: 'success' });
+        } catch (error) {
+            console.error('Update failed:', error);
+            setSnackbar({ open: true, message: 'Failed to update profile!', severity: 'error' });
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!currentUser?._id) {
+            setSnackbar({ open: true, message: 'User ID is missing!', severity: 'error' });
+            return;
+        }
+
+        try {
+            await dispatch(deleteUser(currentUser._id)).unwrap();
+            dispatch(authLogout());
+            navigate('/');
+        } catch (error) {
+            setSnackbar({ open: true, message: 'Failed to delete account!', severity: 'error' });
+        }
+    };
+
+    const handleSnackbarClose = () => setSnackbar({ open: false, message: '', severity: '' });
+
+    const handleCancelEdit = () => {
+        setName(currentUser?.name || '');
+        setEmail(currentUser?.email || '');
+        setSchoolName(currentUser?.schoolName || '');
+        setPassword('');
+        setShowEdit(false);
+    };
+
+    return (
+        <Box sx={styles.container}>
+            <Typography variant="h4" sx={styles.header}>Admin Profile</Typography>
+            <Grid container spacing={3} justifyContent="center">
+                <Grid item xs={12} md={6}>
+                    <Paper elevation={3} sx={styles.profileCard}>
+                        <Box sx={styles.profileInfo}>
+                            <Typography variant="h6">Name: <span>{currentUser?.name}</span></Typography>
+                            <Typography variant="h6">Email: <span>{currentUser?.email}</span></Typography>
+                            <Typography variant="h6">School: <span>{currentUser?.schoolName}</span></Typography>
+                        </Box>
+
+                        <Box sx={styles.buttonGroup}>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                onClick={handleDelete}
+                                sx={styles.deleteButton}
+                            >
+                                Delete Account
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                onClick={() => (showEdit ? handleCancelEdit() : setShowEdit(true))}
+                                sx={styles.editButton}
+                            >
+                                {showEdit ? 'Cancel Edit' : 'Edit Profile'}
+                            </Button>
+                        </Box>
+
+                        <Collapse in={showEdit} timeout="auto">
+                            <Fade in={showEdit}>
+                                <form onSubmit={handleUpdate} style={styles.editForm}>
+                                    <Typography variant="h5" sx={styles.formTitle}>Edit Profile</Typography>
+                                    <TextField
+                                        label="Name"
+                                        variant="outlined"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        sx={styles.textField}
+                                        required
+                                    />
+                                    <TextField
+                                        label="School Name"
+                                        variant="outlined"
+                                        value={schoolName}
+                                        onChange={(e) => setSchoolName(e.target.value)}
+                                        sx={styles.textField}
+                                        required
+                                    />
+                                    <TextField
+                                        label="Email"
+                                        type="email"
+                                        variant="outlined"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        sx={styles.textField}
+                                        required
+                                    />
+                                    <TextField
+                                        label="Password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        variant="outlined"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        sx={styles.textField}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                    <Button type="submit" variant="contained" sx={styles.submitButton}>Update</Button>
+                                </form>
+                            </Fade>
+                        </Collapse>
+                    </Paper>
+                </Grid>
+            </Grid>
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={3000}
+                onClose={handleSnackbarClose}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
+        </Box>
+    );
+};
+
+export default AdminProfile;
+
+const styles = {
+    container: {
+        padding: '30px',
+        backgroundColor: '#f0f4f8',
+        borderRadius: '12px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+    },
+    header: {
+        textAlign: 'center',
+        color: '#3f51b5',
+        marginBottom: '20px',
+    },
+    profileCard: {
+        backgroundColor: '#ffffff',
+        borderRadius: '10px',
+        padding: '20px',
+        boxShadow: '0 2px 15px rgba(0,0,0,0.2)',
+        transition: 'transform 0.3s',
+        '&:hover': {
+            transform: 'scale(1.02)',
+        },
+    },
+    profileInfo: {
+        marginBottom: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+        fontWeight: 'bold',
+        color: '#333',
+        '& span': {
+            fontWeight: 'normal',
+        },
+    },
+    buttonGroup: {
+        marginTop: '20px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    deleteButton: {
+        backgroundColor: '#f44336',
+        '&:hover': {
+            backgroundColor: '#d32f2f',
+        },
+    },
+    toggleButton: {
+        color: '#3f51b5',
+    },
+    editButton: {
+        borderColor: '#3f51b5',
+        color: '#3f51b5',
+    },
+    editForm: {
+        marginTop: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '15px',
+    },
+    formTitle: {
+        marginBottom: '10px',
+        color: '#3f51b5',
+    },
+    textField: {
+        width: '100%',
+    },
+    submitButton: {
+        backgroundColor: '#3f51b5',
+        '&:hover': {
+            backgroundColor: '#303f9f',
+        },
+    },
+};

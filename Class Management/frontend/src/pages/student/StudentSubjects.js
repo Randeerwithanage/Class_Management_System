@@ -1,142 +1,200 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSubjectList } from '../../redux/sclassRelated/sclassHandle';
-import { BottomNavigation, BottomNavigationAction, Container, Paper, Table, TableBody, TableHead, Typography } from '@mui/material';
 import { getUserDetails } from '../../redux/userRelated/userHandle';
-import CustomBarChart from '../../components/CustomBarChart'
-
-import InsertChartIcon from '@mui/icons-material/InsertChart';
-import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
-import TableChartIcon from '@mui/icons-material/TableChart';
-import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
-import { StyledTableCell, StyledTableRow } from '../../components/styles';
+import {
+    AppBar,
+    Tabs,
+    Tab,
+    Container,
+    Box,
+    Typography,
+    CircularProgress,
+    Grid,
+    Card,
+    CardContent,
+    Fade,
+    Zoom,
+    Avatar,
+} from '@mui/material';
+import CustomBarChart from '../../components/CustomBarChart';
 
 const StudentSubjects = () => {
-
     const dispatch = useDispatch();
     const { subjectsList, sclassDetails } = useSelector((state) => state.sclass);
-    const { userDetails, currentUser, loading, response, error } = useSelector((state) => state.user);
-
-    useEffect(() => {
-        dispatch(getUserDetails(currentUser._id, "Student"));
-    }, [dispatch, currentUser._id])
-
-    if (response) { console.log(response) }
-    else if (error) { console.log(error) }
+    const { userDetails, currentUser, loading } = useSelector((state) => state.user);
 
     const [subjectMarks, setSubjectMarks] = useState([]);
-    const [selectedSection, setSelectedSection] = useState('table');
+    const [selectedTab, setSelectedTab] = useState(0);
+
+    useEffect(() => {
+        dispatch(getUserDetails(currentUser._id, 'Student'));
+    }, [dispatch, currentUser._id]);
 
     useEffect(() => {
         if (userDetails) {
             setSubjectMarks(userDetails.examResult || []);
         }
-    }, [userDetails])
+    }, [userDetails]);
 
     useEffect(() => {
-        if (subjectMarks === []) {
-            dispatch(getSubjectList(currentUser.sclassName._id, "ClassSubjects"));
+        if (subjectMarks.length === 0) {
+            dispatch(getSubjectList(currentUser.sclassName._id, 'ClassSubjects'));
         }
     }, [subjectMarks, dispatch, currentUser.sclassName._id]);
 
-    const handleSectionChange = (event, newSection) => {
-        setSelectedSection(newSection);
+    const handleTabChange = (event, newValue) => {
+        setSelectedTab(newValue);
     };
 
-    const renderTableSection = () => {
-        return (
-            <>
-                <Typography variant="h4" align="center" gutterBottom>
-                    Subject Marks
-                </Typography>
-                <Table>
-                    <TableHead>
-                        <StyledTableRow>
-                            <StyledTableCell>Subject</StyledTableCell>
-                            <StyledTableCell>Marks</StyledTableCell>
-                        </StyledTableRow>
-                    </TableHead>
-                    <TableBody>
-                        {subjectMarks.map((result, index) => {
-                            if (!result.subName || !result.marksObtained) {
-                                return null;
-                            }
-                            return (
-                                <StyledTableRow key={index}>
-                                    <StyledTableCell>{result.subName.subName}</StyledTableCell>
-                                    <StyledTableCell>{result.marksObtained}</StyledTableCell>
-                                </StyledTableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </>
-        );
-    };
-
-    const renderChartSection = () => {
-        return <CustomBarChart chartData={subjectMarks} dataKey="marksObtained" />;
-    };
-
-    const renderClassDetailsSection = () => {
-        return (
-            <Container>
+    const renderClassDetailsSection = () => (
+        <Fade in timeout={800}>
+            <Box sx={{ padding: 3 }}>
                 <Typography variant="h4" align="center" gutterBottom>
                     Class Details
                 </Typography>
-                <Typography variant="h5" gutterBottom>
-                    You are currently in Class {sclassDetails && sclassDetails.sclassName}
+                <Typography variant="h6" align="center" color="text.secondary" gutterBottom>
+                    You are currently in Class <strong>{sclassDetails?.sclassName || 'N/A'}</strong>
                 </Typography>
-                <Typography variant="h6" gutterBottom>
-                    And these are the subjects:
-                </Typography>
-                {subjectsList &&
-                    subjectsList.map((subject, index) => (
-                        <div key={index}>
-                            <Typography variant="subtitle1">
-                                {subject.subName} ({subject.subCode})
+                <Box sx={{ marginTop: 4 }}>
+                    <Grid container spacing={3}>
+                        {subjectsList.length > 0 ? (
+                            subjectsList.map((subject, index) => (
+                                <Grid item xs={12} sm={6} md={4} key={index}>
+                                    <Zoom in timeout={800}>
+                                        <Card
+                                            sx={{
+                                                backgroundColor: '#a8d4fc',
+                                                borderRadius: '16px',
+                                                boxShadow: 3,
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            <CardContent>
+                                                <Avatar sx={{ margin: '0 auto', bgcolor: '#007bb2' }}>
+                                                    {subject.subName.charAt(0)}
+                                                </Avatar>
+                                                <Typography variant="h6" mt={2}>
+                                                    {subject.subName}
+                                                </Typography>
+                                                <Typography variant="subtitle2" color="text.secondary">
+                                                    {subject.subCode}
+                                                </Typography>
+                                            </CardContent>
+                                        </Card>
+                                    </Zoom>
+                                </Grid>
+                            ))
+                        ) : (
+                            <Typography variant="h6" color="text.secondary">
+                                No subjects available.
                             </Typography>
-                        </div>
-                    ))}
-            </Container>
-        );
+                        )}
+                    </Grid>
+                </Box>
+            </Box>
+        </Fade>
+    );
+
+    const renderMarksSection = () => (
+        <Fade in timeout={800}>
+            <Box sx={{ padding: 3 }}>
+                <Typography variant="h4" align="center" gutterBottom>
+                    Subject Marks
+                </Typography>
+                <Grid container spacing={3}>
+                    {subjectMarks.length > 0 ? (
+                        subjectMarks.map((result, index) => (
+                            <Grid item xs={12} sm={6} md={4} key={index}>
+                                <Zoom in timeout={800}>
+                                    <Card
+                                        sx={{
+                                            backgroundColor: '#a8d4fc',
+                                            borderRadius: '16px',
+                                            boxShadow: 3,
+                                        }}
+                                    >
+                                        <CardContent>
+                                            <Typography variant="h6" color="primary" gutterBottom>
+                                                {result.subName?.subName || 'Unknown Subject'}
+                                            </Typography>
+                                            <Typography variant="h5">
+                                                {result.marksObtained} / 100
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Zoom>
+                            </Grid>
+                        ))
+                    ) : (
+                        <Typography variant="h6" color="text.secondary">
+                            No marks available.
+                        </Typography>
+                    )}
+                </Grid>
+            </Box>
+        </Fade>
+    );
+
+    const renderChartSection = () => (
+        <Fade in timeout={800}>
+            <Box sx={{ padding: 3 }}>
+                <Typography variant="h4" align="center" gutterBottom>
+                    Marks Chart
+                </Typography>
+                <Box sx={{ marginTop: 4 }}>
+                    <CustomBarChart chartData={subjectMarks} dataKey="marksObtained" />
+                </Box>
+            </Box>
+        </Fade>
+    );
+
+    const renderContent = () => {
+        switch (selectedTab) {
+            case 0:
+                return renderClassDetailsSection();
+            case 1:
+                return renderMarksSection();
+            case 2:
+                return renderChartSection();
+            default:
+                return null;
+        }
     };
 
     return (
-        <>
-            {loading ? (
-                <div>Loading...</div>
-            ) : (
-                <div>
-                    {subjectMarks && Array.isArray(subjectMarks) && subjectMarks.length > 0
-                        ?
-                        (<>
-                            {selectedSection === 'table' && renderTableSection()}
-                            {selectedSection === 'chart' && renderChartSection()}
+        <Container>
+            <AppBar position="static" sx={{ backgroundColor: '#007bb2' }}>
+                <Tabs
+                    value={selectedTab}
+                    onChange={handleTabChange}
+                    textColor="inherit"
+                    indicatorColor="secondary"
+                    variant="fullWidth"
+                >
+                    <Tab label="Class Details" />
+                    <Tab label="Subject Marks" />
+                    <Tab label="Marks Chart" />
+                </Tabs>
+            </AppBar>
 
-                            <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-                                <BottomNavigation value={selectedSection} onChange={handleSectionChange} showLabels>
-                                    <BottomNavigationAction
-                                        label="Table"
-                                        value="table"
-                                        icon={selectedSection === 'table' ? <TableChartIcon /> : <TableChartOutlinedIcon />}
-                                    />
-                                    <BottomNavigationAction
-                                        label="Chart"
-                                        value="chart"
-                                        icon={selectedSection === 'chart' ? <InsertChartIcon /> : <InsertChartOutlinedIcon />}
-                                    />
-                                </BottomNavigation>
-                            </Paper>
-                        </>)
-                        :
-                        (<>
-                            {renderClassDetailsSection()}
-                        </>)
-                    }
-                </div>
-            )}
-        </>
+            <Box sx={{ padding: 3 }}>
+                {loading ? (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            height: '70vh',
+                        }}
+                    >
+                        <CircularProgress sx={{ color: '#007bb2' }} />
+                    </Box>
+                ) : (
+                    renderContent()
+                )}
+            </Box>
+        </Container>
     );
 };
 

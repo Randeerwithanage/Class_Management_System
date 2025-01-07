@@ -7,6 +7,7 @@ const Subject = require('../models/subjectSchema.js');
 const Notice = require('../models/noticeSchema.js');
 const Complain = require('../models/complainSchema.js');
 
+
 // const adminRegister = async (req, res) => {
 //     try {
 //         const salt = await bcrypt.genSalt(10);
@@ -113,22 +114,22 @@ const getAdminDetail = async (req, res) => {
     }
 }
 
-// const deleteAdmin = async (req, res) => {
-//     try {
-//         const result = await Admin.findByIdAndDelete(req.params.id)
+const deleteAdmin = async (req, res) => {
+    try {
+        const result = await Admin.findByIdAndDelete(req.params.id)
 
-//         await Sclass.deleteMany({ school: req.params.id });
-//         await Student.deleteMany({ school: req.params.id });
-//         await Teacher.deleteMany({ school: req.params.id });
-//         await Subject.deleteMany({ school: req.params.id });
-//         await Notice.deleteMany({ school: req.params.id });
-//         await Complain.deleteMany({ school: req.params.id });
+        await Sclass.deleteMany({ school: req.params.id });
+        await Student.deleteMany({ school: req.params.id });
+        await Teacher.deleteMany({ school: req.params.id });
+        await Subject.deleteMany({ school: req.params.id });
+        await Notice.deleteMany({ school: req.params.id });
+        await Complain.deleteMany({ school: req.params.id });
 
-//         res.send(result)
-//     } catch (error) {
-//         res.status(500).json(err);
-//     }
-// }
+        res.send(result)
+    } catch (error) {
+        res.status(500).json(err);
+    }
+}
 
 // const updateAdmin = async (req, res) => {
 //     try {
@@ -147,6 +148,41 @@ const getAdminDetail = async (req, res) => {
 //     }
 // }
 
-// module.exports = { adminRegister, adminLogIn, getAdminDetail, deleteAdmin, updateAdmin };
+const updateAdmin = async (req, res) => {
+    try {
+        const adminId = req.params.id; // Get admin ID from request params
+        const { name, email, password, schoolName } = req.body; // Extract fields from request body
 
-module.exports = { adminRegister, adminLogIn, getAdminDetail };
+        // Prepare an update object
+        const updateData = { name, email, schoolName };
+
+        // Hash password if provided
+        if (password) {
+            const salt = await bcrypt.genSalt(10); // Generate salt for hashing
+            updateData.password = await bcrypt.hash(password, salt); // Hash the password
+        }
+
+        // Find the admin by ID and update
+        const updatedAdmin = await Admin.findByIdAndUpdate(
+            adminId,
+            { $set: updateData },
+            { new: true } // Return the updated document
+        );
+
+        // Remove password from response for security
+        if (updatedAdmin) {
+            updatedAdmin.password = undefined;
+        }
+
+        // Send the updated admin data
+        res.status(200).json(updatedAdmin);
+    } catch (error) {
+        // Handle errors and send appropriate response
+        res.status(500).json({ message: "Failed to update admin profile", error: error.message });
+    }
+};
+
+
+module.exports = { adminRegister, adminLogIn, getAdminDetail, deleteAdmin, updateAdmin };
+
+// module.exports = { adminRegister, adminLogIn, getAdminDetail,  };

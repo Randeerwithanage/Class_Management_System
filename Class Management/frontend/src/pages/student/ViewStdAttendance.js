@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { BottomNavigation, BottomNavigationAction, Box, Button, Collapse, Paper, Table, TableBody, TableHead, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserDetails } from '../../redux/userRelated/userHandle';
 import { calculateOverallAttendancePercentage, calculateSubjectAttendancePercentage, groupAttendanceBySubject } from '../../components/attendanceCalculator';
+import { getUserDetails } from '../../redux/userRelated/userHandle';
 
-import CustomBarChart from '../../components/CustomBarChart'
+import CustomBarChart from '../../components/CustomBarChart';
 
 import InsertChartIcon from '@mui/icons-material/InsertChart';
 import InsertChartOutlinedIcon from '@mui/icons-material/InsertChartOutlined';
@@ -64,17 +64,17 @@ const ViewStdAttendance = () => {
     const renderTableSection = () => {
         return (
             <>
-                <Typography variant="h4" align="center" gutterBottom>
+                <Typography variant="h4" align="center" gutterBottom sx={{ color: '#333', fontWeight: 'bold' }}>
                     Attendance
                 </Typography>
-                <Table>
+                <Table sx={{ borderRadius: '8px', boxShadow: 2, overflow: 'hidden' }}>
                     <TableHead>
                         <StyledTableRow>
-                            <StyledTableCell>Subject</StyledTableCell>
-                            <StyledTableCell>Present</StyledTableCell>
-                            <StyledTableCell>Total Sessions</StyledTableCell>
-                            <StyledTableCell>Attendance Percentage</StyledTableCell>
-                            <StyledTableCell align="center">Actions</StyledTableCell>
+                            <StyledTableCell sx={{ backgroundColor: '#0044cc', color: '#fff' }}>Subject</StyledTableCell>
+                            <StyledTableCell sx={{ backgroundColor: '#0044cc', color: '#fff' }}>Present</StyledTableCell>
+                            <StyledTableCell sx={{ backgroundColor: '#0044cc', color: '#fff' }}>Total Sessions</StyledTableCell>
+                            <StyledTableCell sx={{ backgroundColor: '#0044cc', color: '#fff' }}>Attendance Percentage</StyledTableCell>
+                            <StyledTableCell align="center" sx={{ backgroundColor: '#0044cc', color: '#fff' }}>Actions</StyledTableCell>
                         </StyledTableRow>
                     </TableHead>
                     {Object.entries(attendanceBySubject).map(([subName, { present, allData, subId, sessions }], index) => {
@@ -89,6 +89,11 @@ const ViewStdAttendance = () => {
                                     <StyledTableCell>{subjectAttendancePercentage}%</StyledTableCell>
                                     <StyledTableCell align="center">
                                         <Button variant="contained"
+                                            sx={{
+                                                backgroundColor: '#0044cc',
+                                                '&:hover': { backgroundColor: '#003366' },
+                                                boxShadow: 2,
+                                            }}
                                             onClick={() => handleOpen(subId)}>
                                             {openStates[subId] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}Details
                                         </Button>
@@ -101,39 +106,40 @@ const ViewStdAttendance = () => {
                                                 <Typography variant="h6" gutterBottom component="div">
                                                     Attendance Details
                                                 </Typography>
-                                                <Table size="small" aria-label="purchases">
-                                                    <TableHead>
-                                                        <StyledTableRow>
-                                                            <StyledTableCell>Date</StyledTableCell>
-                                                            <StyledTableCell align="right">Status</StyledTableCell>
-                                                        </StyledTableRow>
-                                                    </TableHead>
-                                                    <TableBody>
-                                                        {allData.map((data, index) => {
-                                                            const date = new Date(data.date);
-                                                            const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
-                                                            return (
-                                                                <StyledTableRow key={index}>
-                                                                    <StyledTableCell component="th" scope="row">
-                                                                        {dateString}
-                                                                    </StyledTableCell>
-                                                                    <StyledTableCell align="right">{data.status}</StyledTableCell>
-                                                                </StyledTableRow>
-                                                            )
-                                                        })}
-                                                    </TableBody>
-                                                </Table>
+                                                <Box sx={{ maxHeight: 200, overflowY: 'auto' }}>
+                                                    <Table size="small" aria-label="purchases">
+                                                        <TableHead>
+                                                            <StyledTableRow>
+                                                                <StyledTableCell sx={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1 }} align="left" >Date</StyledTableCell>
+                                                                <StyledTableCell sx={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1 }} align="right" >Status</StyledTableCell>
+                                                            </StyledTableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                            {allData.map((data, index) => {
+                                                                const date = new Date(data.date);
+                                                                const dateString = date.toString() !== "Invalid Date" ? date.toISOString().substring(0, 10) : "Invalid Date";
+                                                                return (
+                                                                    <StyledTableRow key={index}>
+                                                                        <StyledTableCell component="th" scope="row">
+                                                                            {dateString}
+                                                                        </StyledTableCell>
+                                                                        <StyledTableCell align="right">{data.status}</StyledTableCell>
+                                                                    </StyledTableRow>
+                                                                );
+                                                            })}
+                                                        </TableBody>
+                                                    </Table>
+                                                </Box>
                                             </Box>
                                         </Collapse>
                                     </StyledTableCell>
                                 </StyledTableRow>
                             </TableBody>
                         )
-                    }
-                    )}
+                    })}
                 </Table>
                 <div>
-                    Overall Attendance Percentage: {overallAttendancePercentage.toFixed(2)}%
+                    Overall Attendance Percentage: <span style={{ fontWeight: 'bold', color: '#0044cc' }}>{overallAttendancePercentage.toFixed(2)}%</span>
                 </div>
             </>
         )
@@ -176,11 +182,9 @@ const ViewStdAttendance = () => {
                             </Paper>
                         </>
                         :
-                        <>
-                            <Typography variant="h6" gutterBottom component="div">
-                                Currently You Have No Attendance Details
-                            </Typography>
-                        </>
+                        <Typography variant="h6" gutterBottom component="div" align="center" sx={{ color: '#0044cc' }}>
+                            Currently You Have No Attendance Details
+                        </Typography>
                     }
                 </div>
             }
@@ -188,4 +192,4 @@ const ViewStdAttendance = () => {
     )
 }
 
-export default ViewStdAttendance
+export default ViewStdAttendance;

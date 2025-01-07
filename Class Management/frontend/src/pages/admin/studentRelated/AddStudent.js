@@ -1,16 +1,388 @@
+// import {
+//     Box,
+//     Button,
+//     Card,
+//     CardActions,
+//     CardContent,
+//     CircularProgress,
+//     FormControl,
+//     Grid,
+//     InputLabel,
+//     MenuItem,
+//     Select,
+//     TextField,
+//     Typography
+// } from '@mui/material';
+// import React, { useEffect, useState } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { useNavigate, useParams } from 'react-router-dom';
+// import Popup from '../../../components/Popup';
+// import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
+// import { registerUser } from '../../../redux/userRelated/userHandle';
+// import { underControl } from '../../../redux/userRelated/userSlice';
+
+// const AddStudent = ({ situation }) => {
+//     const dispatch = useDispatch();
+//     const navigate = useNavigate();
+//     const params = useParams();
+
+//     const userState = useSelector(state => state.user);
+//     const { status, currentUser, response, error } = userState;
+//     const { sclassesList } = useSelector((state) => state.sclass);
+
+//     const [name, setName] = useState('');
+//     const [rollNum, setRollNum] = useState('');
+//     const [password, setPassword] = useState('');
+//     const [className, setClassName] = useState('');
+//     const [sclassName, setSclassName] = useState('');
+
+//     // New fields for student and guardian
+//     const [address, setAddress] = useState('');
+//     const [phoneNumber, setPhoneNumber] = useState('');
+//     const [guardianName, setGuardianName] = useState('');
+//     const [guardianPhone, setguardianPhone] = useState('');
+//     const [dob, setDob] = useState('');
+
+//     const [errors, setErrors] = useState({}); // To track errors
+
+//     const adminID = currentUser._id;
+//     const role = "Student";
+//     const attendance = [];
+
+//     useEffect(() => {
+//         if (situation === "Class") {
+//             setSclassName(params.id);
+//         }
+//     }, [params.id, situation]);
+
+//     const [showPopup, setShowPopup] = useState(false);
+//     const [message, setMessage] = useState('');
+//     const [loader, setLoader] = useState(false);
+
+//     useEffect(() => {
+//         dispatch(getAllSclasses(adminID, "Sclass"));
+//     }, [adminID, dispatch]);
+
+//     const changeHandler = (event) => {
+//         if (event.target.value === 'Select Class') {
+//             setClassName('Select Class');
+//             setSclassName('');
+//         } else {
+//             const selectedClass = sclassesList.find(
+//                 (classItem) => classItem.sclassName === event.target.value
+//             );
+//             setClassName(selectedClass.sclassName);
+//             setSclassName(selectedClass._id);
+//         }
+//     };
+
+//     const validateFields = () => {
+//         const newErrors = {};
+//         if (!name.trim()) newErrors.name = 'Name is required';
+//         if (!rollNum.trim()) newErrors.rollNum = 'Roll Number is required';
+//         if (!password.trim()) newErrors.password = 'Password is required';
+//         if (!address.trim()) newErrors.address = 'Address is required';
+//         if (!phoneNumber.trim()) newErrors.phoneNumber = 'Phone Number is required';
+//         if (!guardianName.trim()) newErrors.guardianName = 'Guardian Name is required';
+//         if (!guardianPhone.trim()) newErrors.guardianPhone = 'Guardian Phone is required';
+//         if (!dob) newErrors.dob = 'Date of Birth is required';
+//         if (!sclassName.trim()) newErrors.sclassName = 'Class must be selected';
+
+//         setErrors(newErrors);
+//         return Object.keys(newErrors).length === 0;
+//     };
+
+//     const fields = {
+//         name,
+//         rollNum,
+//         password,
+//         sclassName,
+//         adminID,
+//         role,
+//         attendance,
+//         address,
+//         phoneNumber,
+//         guardianName,
+//         guardianPhone,
+//         dob,
+//     };
+
+//     const submitHandler = (event) => {
+//         event.preventDefault();
+//         if (!validateFields()) {
+//             setMessage('Please fill in all the required fields');
+//             setShowPopup(true);
+//         } else {
+//             setLoader(true);
+//             dispatch(registerUser(fields, role));
+//         }
+//     };
+
+//     useEffect(() => {
+//         if (status === 'added') {
+//             dispatch(underControl());
+//             navigate(-1);
+//         } else if (status === 'failed') {
+//             setMessage(response);
+//             setShowPopup(true);
+//             setLoader(false);
+//         } else if (status === 'error') {
+//             setMessage('Network Error');
+//             setShowPopup(true);
+//             setLoader(false);
+//         }
+//     }, [status, navigate, error, response, dispatch]);
+
+//     const formatPhoneNumber = (value) => {
+//         if (!value) return value;
+//         const phoneNumber = value.replace(/[^\d]/g, "");
+//         const phoneNumberLength = phoneNumber.length;
+//         if (phoneNumberLength < 4) return phoneNumber;
+//         if (phoneNumberLength < 7) {
+//             return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+//         }
+//         return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+//     };
+
+//     const handlePhoneNumberChange = (e) => {
+//         setPhoneNumber(formatPhoneNumber(e.target.value));
+//     };
+
+
+//     const formatguardianPhone = (value) => {
+//         if (!value) return value;
+//         const guardianPhone = value.replace(/[^\d]/g, "");
+//         const guardianPhoneLength = guardianPhone.length;
+//         if (guardianPhoneLength < 4) return guardianPhone;
+//         if (guardianPhoneLength < 7) {
+//             return `(${guardianPhone.slice(0, 3)}) ${guardianPhone.slice(3)}`;
+//         }
+//         return `(${guardianPhone.slice(0, 3)}) ${guardianPhone.slice(3, 6)}-${guardianPhone.slice(6, 10)}`;
+//     };
+
+//     const handleguardianPhoneChanges = (e) => {
+//         setguardianPhone(formatguardianPhone(e.target.value));
+//     };
+
+//     return (
+//         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f4f6f8' }}>
+//             <Card sx={{ width: '100%', maxWidth: 600, boxShadow: 3, borderRadius: 4 }}>
+//                 <CardContent>
+//                     <Typography variant="h5" align="center" gutterBottom>
+//                         Add New Student
+//                     </Typography>
+
+//                     <form onSubmit={submitHandler}>
+//                         <Grid container spacing={2}>
+
+//                             {/* Class selection */}
+//                             {situation === "Student" && (
+//                                 <Grid item xs={12}>
+//                                     <FormControl fullWidth required error={!!errors.sclassName}>
+//                                         <InputLabel>Class</InputLabel>
+//                                         <Select
+//                                             value={className}
+//                                             onChange={changeHandler}
+//                                             label="Class"
+//                                         >
+//                                             <MenuItem value="Select Class">Select Class</MenuItem>
+//                                             {sclassesList.map((classItem, index) => (
+//                                                 <MenuItem key={index} value={classItem.sclassName}>
+//                                                     {classItem.sclassName}
+//                                                 </MenuItem>
+//                                             ))}
+//                                         </Select>
+//                                         {errors.sclassName && <Typography color="error">{errors.sclassName}</Typography>}
+//                                     </FormControl>
+//                                 </Grid>
+//                             )}
+
+//                             {/* Roll Number */}
+//                             <Grid item xs={12}>
+//                                 <TextField
+//                                     fullWidth
+//                                     required
+//                                     label="Roll Number"
+//                                     type="number"
+//                                     value={rollNum}
+//                                     onChange={(e) => setRollNum(e.target.value)}
+//                                     placeholder="Enter student's Roll Number"
+//                                     error={!!errors.rollNum}
+//                                     helperText={errors.rollNum}
+//                                 />
+//                             </Grid>
+
+//                             {/* Name */}
+//                             <Grid item xs={12}>
+//                                 <TextField
+//                                     fullWidth
+//                                     required
+//                                     label="Name"
+//                                     value={name}
+//                                     onChange={(e) => setName(e.target.value)}
+//                                     placeholder="Enter student's name"
+//                                     error={!!errors.name}
+//                                     helperText={errors.name}
+//                                 />
+//                             </Grid>
+
+//                             {/* Date of Birth */}
+//                             <Grid item xs={12}>
+//                                 <TextField
+//                                     fullWidth
+//                                     required
+//                                     label="Birthday"
+//                                     type="date"
+//                                     value={dob}
+//                                     onChange={(e) => setDob(e.target.value)}
+//                                     InputLabelProps={{ shrink: true }}
+//                                     error={!!errors.dob}
+//                                     helperText={errors.dob}
+//                                 />
+//                             </Grid>
+
+//                             {/* Address */}
+//                             <Grid item xs={12}>
+//                                 <TextField
+//                                     fullWidth
+//                                     required
+//                                     label="Address"
+//                                     value={address}
+//                                     onChange={(e) => setAddress(e.target.value)}
+//                                     placeholder="Enter student's address"
+//                                     error={!!errors.address}
+//                                     helperText={errors.address}
+//                                 />
+//                             </Grid>
+
+//                             {/* Phone Number */}
+//                             <Grid item xs={12}>
+//                                 <TextField
+//                                     fullWidth
+//                                     required
+//                                     label="Phone Number"
+//                                     value={phoneNumber}
+//                                     onChange={handlePhoneNumberChange}
+//                                     placeholder="Enter student's phone number"
+//                                     error={!!errors.phoneNumber}
+//                                     helperText={errors.phoneNumber}
+//                                 />
+//                             </Grid>
+
+//                             {/* Guardian Name */}
+//                             <Grid item xs={12}>
+//                                 <TextField
+//                                     fullWidth
+//                                     required
+//                                     label="Guardian Name"
+//                                     value={guardianName}
+//                                     onChange={(e) => setGuardianName(e.target.value)}
+//                                     placeholder="Enter guardian's name"
+//                                     error={!!errors.guardianName}
+//                                     helperText={errors.guardianName}
+//                                 />
+//                             </Grid>
+
+//                             {/* Guardian Phone Number */}
+//                             <Grid item xs={12}>
+//                                 <TextField
+//                                     fullWidth
+//                                     required
+//                                     label="Guardian Phone Number"
+//                                     value={guardianPhone}
+//                                     onChange={handleguardianPhoneChanges}
+//                                     placeholder="Enter guardian's phone number"
+//                                     error={!!errors.guardianPhone}
+//                                     helperText={errors.guardianPhone}
+//                                 />
+//                             </Grid>
+
+//                             {/* Password */}
+//                             <Grid item xs={12}>
+//                                 <TextField
+//                                     fullWidth
+//                                     required
+//                                     label="Password"
+//                                     type="password"
+//                                     value={password}
+//                                     onChange={(e) => setPassword(e.target.value)}
+//                                     placeholder="Enter password"
+//                                     error={!!errors.password}
+//                                     helperText={errors.password}
+//                                 />
+//                             </Grid>
+
+//                         </Grid>
+//                         <CardActions sx={{ justifyContent: 'center', mt: 2 }}>
+//                             <Button type="submit" variant="contained" color="primary" disabled={loader}>
+//                                 {loader ? <CircularProgress size={24} /> : 'Add Student'}
+//                             </Button>
+//                         </CardActions>
+//                     </form>
+//                 </CardContent>
+//             </Card>
+
+//             <Popup
+//                 open={showPopup}
+//                 onClose={() => setShowPopup(false)}
+//                 title="Submission Error"
+//                 content={message}
+//             />
+//         </Box>
+//     );
+// };
+
+// export default AddStudent;
+
+
+
+
+import {
+    Box,
+    Button,
+    Card,
+    CardActions,
+    CardContent,
+    CircularProgress,
+    FormControl,
+    Grid,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+    Typography
+} from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from '../../../redux/userRelated/userHandle';
+import { useNavigate, useParams } from 'react-router-dom';
 import Popup from '../../../components/Popup';
-import { underControl } from '../../../redux/userRelated/userSlice';
 import { getAllSclasses } from '../../../redux/sclassRelated/sclassHandle';
-import { CircularProgress } from '@mui/material';
+import { registerUser } from '../../../redux/userRelated/userHandle';
+import { underControl } from '../../../redux/userRelated/userSlice';
+
+
+const styles = {
+    cardAnimation: {
+        animation: 'slideIn 0.8s ease-out',
+        backgroundColor: '#a8d4fc',
+        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', 
+    },
+    '@keyframes slideIn': {
+        from: {
+            transform: 'translateY(100px)',
+            opacity: 0,
+        },
+        to: {
+            transform: 'translateY(0)',
+            opacity: 1,
+        }
+    }
+};
 
 const AddStudent = ({ situation }) => {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const params = useParams()
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const params = useParams();
 
     const userState = useSelector(state => state.user);
     const { status, currentUser, response, error } = userState;
@@ -18,13 +390,22 @@ const AddStudent = ({ situation }) => {
 
     const [name, setName] = useState('');
     const [rollNum, setRollNum] = useState('');
-    const [password, setPassword] = useState('')
-    const [className, setClassName] = useState('')
-    const [sclassName, setSclassName] = useState('')
+    const [password, setPassword] = useState('');
+    const [className, setClassName] = useState('');
+    const [sclassName, setSclassName] = useState('');
 
-    const adminID = currentUser._id
-    const role = "Student"
-    const attendance = []
+    
+    const [address, setAddress] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [guardianName, setGuardianName] = useState('');
+    const [guardianPhone, setguardianPhone] = useState('');
+    const [dob, setDob] = useState('');
+
+    const [errors, setErrors] = useState({}); 
+
+    const adminID = currentUser._id;
+    const role = "Student";
+    const attendance = [];
 
     useEffect(() => {
         if (situation === "Class") {
@@ -33,8 +414,8 @@ const AddStudent = ({ situation }) => {
     }, [params.id, situation]);
 
     const [showPopup, setShowPopup] = useState(false);
-    const [message, setMessage] = useState("");
-    const [loader, setLoader] = useState(false)
+    const [message, setMessage] = useState('');
+    const [loader, setLoader] = useState(false);
 
     useEffect(() => {
         dispatch(getAllSclasses(adminID, "Sclass"));
@@ -51,92 +432,259 @@ const AddStudent = ({ situation }) => {
             setClassName(selectedClass.sclassName);
             setSclassName(selectedClass._id);
         }
-    }
+    };
 
-    const fields = { name, rollNum, password, sclassName, adminID, role, attendance }
+    const validateFields = () => {
+        const newErrors = {};
+        if (!name.trim()) newErrors.name = 'Name is required';
+        if (!rollNum.trim()) newErrors.rollNum = 'Roll Number is required';
+        if (!password.trim()) newErrors.password = 'Password is required';
+        if (!address.trim()) newErrors.address = 'Address is required';
+        if (!phoneNumber.trim()) newErrors.phoneNumber = 'Phone Number is required';
+        if (!guardianName.trim()) newErrors.guardianName = 'Guardian Name is required';
+        if (!guardianPhone.trim()) newErrors.guardianPhone = 'Guardian Phone is required';
+        if (!dob) newErrors.dob = 'Date of Birth is required';
+        if (!sclassName.trim()) newErrors.sclassName = 'Class must be selected';
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const fields = {
+        name,
+        rollNum,
+        password,
+        sclassName,
+        adminID,
+        role,
+        attendance,
+        address,
+        phoneNumber,
+        guardianName,
+        guardianPhone,
+        dob,
+    };
 
     const submitHandler = (event) => {
-        event.preventDefault()
-        if (sclassName === "") {
-            setMessage("Please select a classname")
-            setShowPopup(true)
+        event.preventDefault();
+        if (!validateFields()) {
+            setMessage('Please fill in all the required fields');
+            setShowPopup(true);
+        } else {
+            setLoader(true);
+            dispatch(registerUser(fields, role));
         }
-        else {
-            setLoader(true)
-            dispatch(registerUser(fields, role))
-        }
-    }
+    };
 
     useEffect(() => {
         if (status === 'added') {
-            dispatch(underControl())
-            navigate(-1)
-        }
-        else if (status === 'failed') {
-            setMessage(response)
-            setShowPopup(true)
-            setLoader(false)
-        }
-        else if (status === 'error') {
-            setMessage("Network Error")
-            setShowPopup(true)
-            setLoader(false)
+            dispatch(underControl());
+            navigate(-1);
+        } else if (status === 'failed') {
+            setMessage(response);
+            setShowPopup(true);
+            setLoader(false);
+        } else if (status === 'error') {
+            setMessage('Network Error');
+            setShowPopup(true);
+            setLoader(false);
         }
     }, [status, navigate, error, response, dispatch]);
 
+    const formatPhoneNumber = (value) => {
+        if (!value) return value;
+        const phoneNumber = value.replace(/[^\d]/g, "");
+        const phoneNumberLength = phoneNumber.length;
+        if (phoneNumberLength < 4) return phoneNumber;
+        if (phoneNumberLength < 7) {
+            return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+        }
+        return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+    };
+
+    const handlePhoneNumberChange = (e) => {
+        setPhoneNumber(formatPhoneNumber(e.target.value));
+    };
+
+    const formatguardianPhone = (value) => {
+        if (!value) return value;
+        const guardianPhone = value.replace(/[^\d]/g, "");
+        const guardianPhoneLength = guardianPhone.length;
+        if (guardianPhoneLength < 4) return guardianPhone;
+        if (guardianPhoneLength < 7) {
+            return `(${guardianPhone.slice(0, 3)}) ${guardianPhone.slice(3)}`;
+        }
+        return `(${guardianPhone.slice(0, 3)}) ${guardianPhone.slice(3, 6)}-${guardianPhone.slice(6, 10)}`;
+    };
+
+    const handleguardianPhoneChanges = (e) => {
+        setguardianPhone(formatguardianPhone(e.target.value));
+    };
+
     return (
-        <>
-            <div className="register">
-                <form className="registerForm" onSubmit={submitHandler}>
-                    <span className="registerTitle">Add Student</span>
-                    <label>Name</label>
-                    <input className="registerInput" type="text" placeholder="Enter student's name..."
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        autoComplete="name" required />
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f4f6f8' }}>
+            <Card sx={{ ...styles.cardAnimation, width: '100%', maxWidth: 600, borderRadius: 4 }}>
+                <CardContent>
+                    <Typography variant="h5" align="center" gutterBottom>
+                        Add New Student
+                    </Typography>
 
-                    {
-                        situation === "Student" &&
-                        <>
-                            <label>Class</label>
-                            <select
-                                className="registerInput"
-                                value={className}
-                                onChange={changeHandler} required>
-                                <option value='Select Class'>Select Class</option>
-                                {sclassesList.map((classItem, index) => (
-                                    <option key={index} value={classItem.sclassName}>
-                                        {classItem.sclassName}
-                                    </option>
-                                ))}
-                            </select>
-                        </>
-                    }
+                    <form onSubmit={submitHandler}>
+                        <Grid container spacing={2}>
+                            {situation === "Student" && (
+                                <Grid item xs={12}>
+                                    <FormControl fullWidth required error={!!errors.sclassName}>
+                                        <InputLabel>Class</InputLabel>
+                                        <Select
+                                            value={className}
+                                            onChange={changeHandler}
+                                            label="Class"
+                                        >
+                                            <MenuItem value="Select Class">Select Class</MenuItem>
+                                            {sclassesList.map((classItem, index) => (
+                                                <MenuItem key={index} value={classItem.sclassName}>
+                                                    {classItem.sclassName}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                        {errors.sclassName && <Typography color="error">{errors.sclassName}</Typography>}
+                                    </FormControl>
+                                </Grid>
+                            )}
 
-                    <label>Roll Number</label>
-                    <input className="registerInput" type="number" placeholder="Enter student's Roll Number..."
-                        value={rollNum}
-                        onChange={(event) => setRollNum(event.target.value)}
-                        required />
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Roll Number"
+                                    type="number"
+                                    value={rollNum}
+                                    onChange={(e) => setRollNum(e.target.value)}
+                                    placeholder="Enter student's Roll Number"
+                                    error={!!errors.rollNum}
+                                    helperText={errors.rollNum}
+                                />
+                            </Grid>
 
-                    <label>Password</label>
-                    <input className="registerInput" type="password" placeholder="Enter student's password..."
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        autoComplete="new-password" required />
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="Enter student's name"
+                                    error={!!errors.name}
+                                    helperText={errors.name}
+                                />
+                            </Grid>
 
-                    <button className="registerButton" type="submit" disabled={loader}>
-                        {loader ? (
-                            <CircularProgress size={24} color="inherit" />
-                        ) : (
-                            'Add'
-                        )}
-                    </button>
-                </form>
-            </div>
-            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-        </>
-    )
-}
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Birthday"
+                                    type="date"
+                                    value={dob}
+                                    onChange={(e) => setDob(e.target.value)}
+                                    InputLabelProps={{ shrink: true }}
+                                    error={!!errors.dob}
+                                    helperText={errors.dob}
+                                />
+                            </Grid>
 
-export default AddStudent
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Address"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    placeholder="Enter student's address"
+                                    error={!!errors.address}
+                                    helperText={errors.address}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Phone Number"
+                                    value={phoneNumber}
+                                    onChange={handlePhoneNumberChange}
+                                    placeholder="Enter phone number"
+                                    error={!!errors.phoneNumber}
+                                    helperText={errors.phoneNumber}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Guardian's Name"
+                                    value={guardianName}
+                                    onChange={(e) => setGuardianName(e.target.value)}
+                                    placeholder="Enter guardian's name"
+                                    error={!!errors.guardianName}
+                                    helperText={errors.guardianName}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Guardian's Phone"
+                                    value={guardianPhone}
+                                    onChange={handleguardianPhoneChanges}
+                                    placeholder="Enter guardian's phone number"
+                                    error={!!errors.guardianPhone}
+                                    helperText={errors.guardianPhone}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label="Password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Enter password"
+                                    error={!!errors.password}
+                                    helperText={errors.password}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        <CardActions>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                type="submit"
+                                color="primary"
+                                disabled={loader}
+                                sx={{ mt: 2 }}
+                                endIcon={loader && <CircularProgress size={20} />}
+                            >
+                                {loader ? 'Adding...' : 'Add Student'}
+                            </Button>
+                        </CardActions>
+                    </form>
+                </CardContent>
+            </Card>
+
+            <Popup
+                open={showPopup}
+                onClose={() => setShowPopup(false)}
+                title="Submission Error"
+                message={message}
+            />
+        </Box>
+    );
+};
+
+export default AddStudent;
