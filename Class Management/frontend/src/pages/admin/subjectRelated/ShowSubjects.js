@@ -27,12 +27,14 @@ const ShowSubjects = () => {
     }, [currentUser._id, dispatch]);
 
     if (error) {
-        console.error(error);
+        console.log(error);
     }
 
     const deleteHandler = (deleteID, address) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this subject?");
-        if (!confirmDelete) return;
+        if (!confirmDelete) {
+            return;
+        }
 
         dispatch(deleteUser(deleteID, address))
             .then(() => {
@@ -44,17 +46,17 @@ const ShowSubjects = () => {
             });
     };
 
-    const filteredRows = subjectsList
-        ? subjectsList.filter((subject) =>
-              subject.subName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              subject.sclassName.sclassName.toLowerCase().includes(searchTerm.toLowerCase())
-          ).map((subject) => ({
+    const filteredRows = subjectsList && subjectsList.length > 0 && subjectsList
+        .filter((subject) =>
+            subject.subName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            subject.sclassName.sclassName.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .map((subject) => ({
             id: subject._id,
             subName: subject.subName,
             sessions: subject.sessions,
             sclassName: subject.sclassName.sclassName,
-        }))
-        : [];
+        }));
 
     const subjectColumns = [
         { field: 'subName', headerName: 'Subject Name', flex: 1.2, minWidth: 150, align: 'left', headerAlign: 'left' },
@@ -66,7 +68,8 @@ const ShowSubjects = () => {
                     <IconButton onClick={() => deleteHandler(params.row.id, "Subject")}>
                         <DeleteIcon color="error" fontSize="small" />
                     </IconButton>
-                    <IconButton onClick={() => navigate(`/Admin/Subjects/Subject/${params.row.id}`)}>
+
+                    <IconButton onClick={() => navigate(`/Admin/subjects/subject/${params.row.id}`)}>
                         <RemoveRedEyeIcon color="primary" fontSize="small" />
                     </IconButton>
                 </>
@@ -89,32 +92,33 @@ const ShowSubjects = () => {
 
     return (
         <>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', marginBottom: '16px' }}>
-                {/* Search bar */}
-                <TextField
-                    label="Search..."
-                    variant="outlined"
-                    fullWidth
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search subject name, class, etc..."
-                    size="small"
-                    sx={{ width: '300px' }}
-                />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', marginBottom: '16px' , marginLeft: '10px'}} >
+                {/* Left side: Search bar */}
+                <Box sx={{ width: '300px' }}>
+                    <TextField
+                        label="Search..."
+                        variant="outlined"
+                        fullWidth
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Search subject name, class, etc..."
+                        size="small"
+                    />
+                </Box>
 
-                {/* Table heading */}
-                <Typography variant="h5" align="center" fontWeight="bold" sx={{ flexGrow: 1 }}>
+                {/* Center: Table heading */}
+                <Typography variant="h5" align="center" fontWeight={"bold"} sx={{ flexGrow: 1 }}>
                     Subject List
                 </Typography>
 
-                {/* Add Subject button */}
-                <GreenButton variant="contained" onClick={() => navigate("/Admin/subjects/chooseclass")} sx={{ marginRight: 2 }}>
+                {/* Right side: Add Subject button */}
+                <GreenButton variant="contained" onClick={() => navigate("/Admin/subjects/chooseclass")} style={{ marginRight: 10 }}>
                     Add Subject
                 </GreenButton>
             </Box>
 
-            <Paper sx={{ width: '95%', margin: 'auto', padding: 2, borderRadius: 2, backgroundColor: '#a2d2ff' }}>
-                {!loading && filteredRows.length > 0 ? (
+            <Paper sx={{ width: '95%', margin: 'auto', overflow: 'hidden', padding: '16px', borderRadius: '12px', backgroundColor: '#a2d2ff' }}>
+                {!loading && Array.isArray(filteredRows) && filteredRows.length > 0 ? (
                     <DataGrid
                         rows={filteredRows}
                         columns={subjectColumns}
@@ -127,6 +131,9 @@ const ShowSubjects = () => {
                                 color: '#fff',
                                 fontSize: '1rem',
                                 fontWeight: 'bold',
+                            },
+                            '& .MuiDataGrid-columnSeparator': {
+                                display: 'none',
                             },
                             '& .MuiDataGrid-cell': {
                                 textAlign: 'center',
